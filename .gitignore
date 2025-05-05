@@ -1,0 +1,20 @@
+# Virtuálne prostredia
+.venv/
+venv/
+
+# Databáza
+db.sqlite3
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logy
+*.log
+
+# VS Code
+.vscode/
+
+# OS súbory
+.DS_Store
+Thumbs.db
