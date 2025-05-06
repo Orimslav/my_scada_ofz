@@ -34,6 +34,7 @@ ChartJS.register(
 Modal.setAppElement('#root');
 
 const Compressor = () => {
+  const [timeRange, setTimeRange] = useState('7d'); // predvolene nastavenie rozsahu grafu ,'24h', '7d'
   const [sensorData, setSensorData] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedSensor, setSelectedSensor] = useState(null);
@@ -120,15 +121,15 @@ const Compressor = () => {
           }
         },
         {
-          label: 'Výpadok spojenia',
-          data: [],
+          label: 'Výpadok spojenia (červená bodkovaná)',
+          data: [{ x: new Date(), y: null }],
           borderColor: 'red',
           borderDash: [6, 6],
           pointRadius: 0,
           borderWidth: 2,
           fill: false,
-          tension: 0.3,
-          hidden: false
+          hidden: false,
+          showLine: true
         }
       ]
     };
@@ -175,7 +176,17 @@ const Compressor = () => {
           },
           tooltipFormat: 'HH:mm'
         },
-        min: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        min: (() => {
+          const now = Date.now();
+          switch (timeRange) {
+            case '6h': return new Date(now - 6 * 60 * 60 * 1000);
+            case '12h': return new Date(now - 12 * 60 * 60 * 1000);
+            case '24h': return new Date(now - 24 * 60 * 60 * 1000);
+            case '48h': return new Date(now - 48 * 60 * 60 * 1000);
+            case '7d': return new Date(now - 7 * 24 * 60 * 60 * 1000);
+            default: return new Date(now - 24 * 60 * 60 * 1000);
+          }
+        })(),
         max: new Date(),
         ticks: {
           color: 'white',
@@ -232,6 +243,13 @@ const Compressor = () => {
         <h2>{getSensorLabel(selectedSensor)}</h2>
         <Line data={chartData} options={chartOptions} ref={chartRef} />
         <div className="chart-buttons">
+          <select onChange={(e) => setTimeRange(e.target.value)} defaultValue="7d">
+            <option value="6h">Posledných 6h</option>
+            <option value="12h">Posledných 12h</option>
+            <option value="24h">Posledných 24h</option>
+            <option value="48h">Posledných 48h</option>
+            <option value="7d">Posledných 7 dní</option>
+          </select>
           <button onClick={resetZoom}>Resetovať graf</button>
           <button onClick={exportCSV}>Exportovať CSV</button>
           <button onClick={closeModal}>Zavrieť</button>

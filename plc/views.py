@@ -33,7 +33,7 @@ class SensorHistoryView(APIView):
         except Sensor.DoesNotExist:
             return Response({'error': 'Sensor not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        since = timezone.now() - timedelta(hours=24)
+        since = timezone.now() - timedelta(days=7) # nastavenie rozsahu zobrazenia dat pre graf vo frontende. timedelta(hours=24)
         readings = SensorReading.objects.filter(sensor=sensor, timestamp__gte=since).order_by('timestamp')
 
         data = [{'timestamp': r.timestamp, 'value': r.value} for r in readings]
