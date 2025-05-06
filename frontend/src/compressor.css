@@ -1,0 +1,77 @@
+.dashboard-container {
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  color: #eee;
+  background: #1b1b1b;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.sensor-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.sensor-box {
+  background: #222;
+  padding: 20px;
+  border-radius: 15px;
+  width: 280px;
+  cursor: default;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  transition: transform 0.3s;
+}
+
+.sensor-box h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.sensor-value {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 20px 0;
+  color: #00bcd4;
+}
+
+/* MODAL – graf */
+.ReactModal__Overlay {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.chart-modal {
+  background: #1b1b1b;
+  color: #eee;
+  width: 90%;
+  max-width: 900px;
+  padding: 30px;
+  border-radius: 12px;
+  outline: none;
+  box-shadow: 0 0 25px rgba(0, 188, 212, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.chart-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chart-buttons button {
+  padding: 10px 16px;
+  background: #00bcd4;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
