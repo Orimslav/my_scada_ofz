@@ -1,3 +1,11 @@
+/**
+ * Home.jsx – Úvodná obrazovka SCADA systému OFZ
+ *
+ * Tento komponent zobrazuje uvítaciu stránku pre webovú aplikáciu SCADA systému spoločnosti OFZ, a.s.
+ * Obsahuje logo, názov systému a uvítací text s inštrukciou na výber aplikácie z menu.
+ * Používateľsky prívetivý dizajn s centrickým zarovnaním a kontrastným štýlom vhodným pre priemyselné použitie.
+ */
+
 import React from 'react';
 
 const Home = () => {

@@ -1,3 +1,20 @@
+/**
+ * Kompresor – Vizualizácia prietoku a rosného bodu
+ *
+ * Tento React komponent slúži na vizualizáciu údajov zo senzorov merajúcich prietok vzduchu (v m³/h)
+ * a rosného bodu (v °C) v rôznych častiach systému. Údaje sú získavané z backend API a zobrazované
+ * vo forme prehľadných kariet a interaktívneho grafu.
+ *
+ * Funkcie komponentu:
+ * - Načítanie aktuálnych hodnôt zo senzorov pri načítaní komponentu.
+ * - Kliknutím na ktorúkoľvek kartu senzora sa otvorí modálne okno s historickým grafom.
+ * - Graf podporuje zoom/pan, výber časového rozsahu a export údajov do CSV.
+ * - Zobrazovanie výpadkov spojenia medzi meraniami pomocou prerušenej červenej línie.
+ * - Reaktívne zobrazenie s prispôsobením farieb a jednotiek pre jednotlivé senzory.
+ */
+
+
+// Import potrebných knižníc a komponentov
 import React, { useEffect, useState, useRef } from 'react';
 import './compressor.css';
 import axios from 'axios';
@@ -18,6 +35,7 @@ import {
 import zoomPlugin from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-date-fns';
 
+// Registrácia modulov pre Chart.js
 ChartJS.register(
   LineElement,
   PointElement,
@@ -31,16 +49,19 @@ ChartJS.register(
   zoomPlugin
 );
 
+// Nastavenie modálneho okna na koreňový element
 Modal.setAppElement('#root');
 
 const Compressor = () => {
-  const [timeRange, setTimeRange] = useState('7d'); // predvolene nastavenie rozsahu grafu ,'24h', '7d'
-  const [sensorData, setSensorData] = useState([]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedSensor, setSelectedSensor] = useState(null);
-  const [historyData, setHistoryData] = useState([]);
-  const chartRef = useRef();
+  // Hooky na ukladanie stavu
+  const [timeRange, setTimeRange] = useState('7d'); // Predvolený rozsah pre graf
+  const [sensorData, setSensorData] = useState([]); // Aktuálne hodnoty zo senzorov
+  const [modalIsOpen, setModalIsOpen] = useState(false); // Stav modálneho okna
+  const [selectedSensor, setSelectedSensor] = useState(null); // Aktuálne zvolený senzor pre detail
+  const [historyData, setHistoryData] = useState([]); // Historické dáta pre graf
+  const chartRef = useRef(); // Ref na objekt grafu
 
+  // Zoznam senzorov s popisom a jednotkami
   const sensorLabels = [
     { key: 'flowVolume_01', label: 'Hlavný výstup', unit: 'm³/h' },
     { key: 'flowVolume_02', label: 'Rozvodňa 22kV', unit: 'm³/h' },
@@ -55,12 +76,14 @@ const Compressor = () => {
 
   const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
+  // Načítanie najnovších údajov zo senzorov pri načítaní komponentu
   useEffect(() => {
     axios.get(`${apiBaseUrl}/api/latest/`)
       .then(response => setSensorData(response.data))
       .catch(error => console.error('Chyba pri načítaní senzorov:', error));
   }, [apiBaseUrl]);
 
+  // Otvorenie modálneho okna a načítanie historických dát pre vybraný senzor
   const openModal = (sensorKey) => {
     setSelectedSensor(sensorKey);
     setModalIsOpen(true);
@@ -69,23 +92,28 @@ const Compressor = () => {
       .catch(err => console.error('Chyba pri načítaní historických dát:', err));
   };
 
+  // Zavretie modálneho okna a reset vybraných dát
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedSensor(null);
     setHistoryData([]);
   };
 
+  // Získanie hodnoty senzora podľa jeho kľúča
   const getSensorValue = (key) => {
     const item = sensorData.find(s => s.sensor === key);
     return item ? item.value.toFixed(1) : '–';
   };
 
+  // Získanie popisu senzora
   const getSensorLabel = (key) =>
     sensorLabels.find(s => s.key === key)?.label || key;
 
+  // Získanie jednotky senzora
   const getSensorUnit = (key) =>
     sensorLabels.find(s => s.key === key)?.unit || '';
 
+  // Vytvorenie dátového objektu pre graf vrátane detekcie výpadkov spojenia
   const getChartData = () => {
     const dataset = historyData.map(d => ({
       x: new Date(d.timestamp),
@@ -104,6 +132,7 @@ const Compressor = () => {
           fill: true,
           spanGaps: false,
           segment: {
+            // Detekcia výpadku - prerušovaná čiara ak rozdiel medzi bodmi > 10 minút
             borderDash: ctx => {
               if (!ctx || !ctx.p0 || !ctx.p1) return;
               const prev = ctx.p0.parsed;
@@ -121,7 +150,8 @@ const Compressor = () => {
           }
         },
         {
-          label: 'Výpadok spojenia (červená bodkovaná)',
+          // Dummy dataset pre označenie výpadku
+          label: 'Výpadok spojenia',
           data: [{ x: new Date(), y: null }],
           borderColor: 'red',
           borderDash: [6, 6],
@@ -137,6 +167,7 @@ const Compressor = () => {
 
   const chartData = getChartData();
 
+  // Konfigurácia možností zobrazenia grafu
   const chartOptions = {
     responsive: true,
     plugins: {
@@ -171,11 +202,10 @@ const Compressor = () => {
         time: {
           unit: 'hour',
           stepSize: 2,
-          displayFormats: {
-            hour: 'HH:mm'
-          },
+          displayFormats: { hour: 'HH:mm' },
           tooltipFormat: 'HH:mm'
         },
+        // Výpočet minimálneho času podľa zvoleného rozsahu
         min: (() => {
           const now = Date.now();
           switch (timeRange) {
@@ -205,6 +235,7 @@ const Compressor = () => {
     }
   };
 
+  // Funkcia na exportovanie historických dát do CSV súboru
   const exportCSV = () => {
     if (!historyData.length) return;
 
@@ -221,14 +252,17 @@ const Compressor = () => {
     document.body.removeChild(link);
   };
 
+  // Resetovanie priblíženia grafu
   const resetZoom = () => {
     chartRef.current?.resetZoom();
   };
 
+  // Renderovanie komponentu
   return (
     <div className="dashboard-container">
       <h2>💨 Prietok vzduchu v potrubí | 💧 Rosný bod</h2>
 
+      {/* Zobrazenie kariet senzorov */}
       <div className="sensor-grid">
         {sensorLabels.map((sensor, idx) => (
           <div key={idx} className="sensor-box" onClick={() => openModal(sensor.key)}>
@@ -239,6 +273,7 @@ const Compressor = () => {
         ))}
       </div>
 
+      {/* Modálne okno s grafom */}
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Graf senzorov" className="chart-modal">
         <h2>{getSensorLabel(selectedSensor)}</h2>
         <Line data={chartData} options={chartOptions} ref={chartRef} />

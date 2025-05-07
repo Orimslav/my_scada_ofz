@@ -1,18 +1,29 @@
+/* 
+ * App.css – Štýly pre SCADA aplikáciu OFZ
+ * 
+ * Tento súbor obsahuje základné a doplnkové štýly pre hlavnú aplikáciu SCADA rozhrania.
+ * Zahŕňa animácie, farebnú schému a dizajn pre dashboard kompresorovej stanice vrátane responzívneho zobrazenia.
+ */
+
+/* Základné zarovnanie aplikácie */
 .App {
   text-align: center;
 }
 
+/* Veľkosť a správanie loga */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
 
+/* Animácia loga ak používateľ nemá preferenciu zníženého pohybu */
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/* Hlavička aplikácie */
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -24,10 +35,12 @@
   color: white;
 }
 
+/* Farba odkazov v aplikácii */
 .App-link {
   color: #61dafb;
 }
 
+/* Definícia animácie otáčania loga */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -37,7 +50,11 @@
   }
 }
 
-/* SCADA layout */
+/* 
+ * SCADA layout – štýly pre dashboard senzorov
+ */
+
+/* Kontajner pre dashboard */
 .dashboard-container {
   padding: 20px;
   background: #1b1b1b;
@@ -45,12 +62,14 @@
   min-height: 100vh;
 }
 
+/* Obal pre jednotlivé senzory */
 .sensor-wrapper {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
+/* Mriežka pre zobrazenie senzorových boxov */
 .sensor-grid {
   display: grid;
   grid-template-columns: repeat(3, 300px); /* presne 3 stĺpce */
@@ -59,12 +78,13 @@
   justify-content: center;
 }
 
+/* Dizajn senzorového boxu */
 .sensor-box {
   background: #2a2a2a;
   border-radius: 20px;
   padding: 30px;
   text-align: center;
-  box-shadow: 0 0 15px #00bcd4;
+  box-shadow: 0 0 15px #00bcd4; /* modrý okraj ako zvýraznenie */
   font-size: 22px;
   min-height: 160px;
   display: flex;
@@ -73,17 +93,23 @@
   transition: transform 0.3s;
 }
 
+/* Efekt pri prechode myšou nad senzorový box */
 .sensor-box:hover {
   transform: scale(1.03);
 }
 
-/* Responzívne zobrazenie pre tablet a mobil */
+/* 
+ * Responzívne zobrazenie – prispôsobenie počtu stĺpcov podľa šírky zariadenia
+ */
+
+/* Tablety */
 @media (max-width: 1024px) {
   .sensor-grid {
     grid-template-columns: repeat(2, 300px);
   }
 }
 
+/* Mobily */
 @media (max-width: 640px) {
   .sensor-grid {
     grid-template-columns: repeat(1, 300px);
