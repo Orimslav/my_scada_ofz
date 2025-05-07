@@ -78,10 +78,18 @@ const Compressor = () => {
 
   // Načítanie najnovších údajov zo senzorov pri načítaní komponentu
   useEffect(() => {
-    axios.get(`${apiBaseUrl}/api/latest/`)
-      .then(response => setSensorData(response.data))
-      .catch(error => console.error('Chyba pri načítaní senzorov:', error));
+    const fetchData = () => {
+      axios.get(`${apiBaseUrl}/api/latest/`)
+        .then(response => setSensorData(response.data))
+        .catch(error => console.error('Chyba pri načítaní senzorov:', error));
+    };
+  
+    fetchData(); // okamžité načítanie
+    const interval = setInterval(fetchData, 10000); // každých 10 sekúnd
+  
+    return () => clearInterval(interval); // vyčistenie pri odpojení komponentu
   }, [apiBaseUrl]);
+  
 
   // Otvorenie modálneho okna a načítanie historických dát pre vybraný senzor
   const openModal = (sensorKey) => {
